@@ -1,15 +1,19 @@
 grammar Hierarchies;
 
-@parser::header { }
+@parser::header {
+    import net.alexjeffery.hierarchies.syntax.Declaration;
+    import net.alexjeffery.hierarchies.syntax.Option;
+    import net.alexjeffery.hierarchies.syntax.Field;
+}
 
 declaration returns [Declaration out]
-    : IdentU '=' fields ';' { $out = new FixedDeclaration($IdentU.text, $fields.out); }
-    | IdentU '=' opts ';' { $out = new OptionDeclaration($IdentU.text, $opts.out); }
+    : IdentU '=' fields ';' { $out = new Declaration.Fixed($IdentU.text, $fields.out); }
+    | IdentU '=' opts ';' { $out = new Declaration.Options($IdentU.text, $opts.out); }
     ;
 
 opts returns [List<Option> out]
     : option '|' opts { $out = $opts.out; $out.add(0, $option.out); }
-    | option { $out = new ArrayList<Field>(); $out.add($option.out); }
+    | option { $out = new ArrayList<Option>(); $out.add($option.out); }
     ;
 
 option returns [Option out]
