@@ -14,7 +14,9 @@ public abstract class Declaration extends Syntax {
         this.name = name;
     }
 
-    public abstract <I, O, X extends Throwable> O accept(@NotNull DeclarationVisitor<I, O, X> visitor, I input) throws X;
+    public <I, O, X extends Throwable> O accept(@NotNull DeclarationVisitor<I, O, X> visitor, I input) throws X {
+        return null;
+    }
 
     public static class Options extends Declaration {
 
