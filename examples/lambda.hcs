@@ -1,0 +1,9 @@
+Term =
+    {lambda}
+        varName:String
+        body:Term |
+    {application}
+        function:Term
+        argument:Term |
+    {variable}
+        varName:String ;
