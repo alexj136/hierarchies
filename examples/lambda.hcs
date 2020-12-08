@@ -1,9 +1,9 @@
 Term =
-    {lambda}
+    {Lambda}
         varName:String
         body:Term |
-    {application}
+    {Application}
         function:Term
         argument:Term |
-    {variable}
+    {Variable}
         varName:String ;
