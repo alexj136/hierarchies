@@ -3,6 +3,7 @@ package net.alexjeffery.hierarchies.output;
 import net.alexjeffery.hierarchies.syntax.Declaration;
 import net.alexjeffery.hierarchies.syntax.Field;
 import net.alexjeffery.hierarchies.syntax.Option;
+import net.alexjeffery.hierarchies.util.Pair;
 import net.alexjeffery.hierarchies.util.ThrowingConsumer;
 import net.alexjeffery.hierarchies.visitor.DeclarationVisitor;
 import org.antlr.v4.runtime.misc.NotNull;
@@ -11,45 +12,56 @@ import org.antlr.v4.runtime.misc.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class CodeGenerator {
 
     @NotNull
-    public List<String> genDeclaration(@NotNull Declaration declaration) throws IOException {
-        return declaration.accept(GenDeclarationVisitor.INSTANCE, null);
+    public static List<Pair<String, Appendable>> genDeclaration(
+            @NotNull Supplier<Appendable> bufferSupplier,
+            @NotNull Declaration declaration
+    ) throws IOException {
+        return declaration.accept(GenDeclarationVisitor.INSTANCE, bufferSupplier);
     }
 
-    private static class GenDeclarationVisitor extends DeclarationVisitor<Void, List<String>, IOException> {
+    private static class GenDeclarationVisitor
+            extends DeclarationVisitor<Supplier<Appendable>, List<Pair<String, Appendable>>, IOException> {
 
         private GenDeclarationVisitor() { }
 
         public static final GenDeclarationVisitor INSTANCE = new GenDeclarationVisitor();
 
         @NotNull
-        public List<String> visit(@NotNull Declaration.Fixed fixed, Void input) throws IOException {
-            List<String> output= new ArrayList<>();
-            StringBuilder builder = new StringBuilder();
-            ConcreteClassGenerator.generate(builder, fixed.fields, fixed.name);
-            output.add(builder.toString());
+        public List<Pair<String, Appendable>> visit(
+                @NotNull Declaration.Fixed fixed,
+                @NotNull Supplier<Appendable> bufferSupplier
+        ) throws IOException {
+            List<Pair<String, Appendable>> output = new ArrayList<>();
+            Appendable buffer = bufferSupplier.get();
+            ConcreteClassGenerator.generate(buffer, fixed.fields, fixed.name);
+            output.add(Pair.of(fixed.name, buffer));
             return output;
         }
 
         @NotNull
-        public List<String> visit(@NotNull Declaration.Options options, Void input) throws IOException {
-            List<String> output = new ArrayList<>();
+        public List<Pair<String, Appendable>> visit(
+                @NotNull Declaration.Options options,
+                @NotNull Supplier<Appendable> bufferSupplier
+        ) throws IOException {
+            List<Pair<String, Appendable>> output = new ArrayList<>();
 
-            StringBuilder builder = new StringBuilder();
-            generateAbstractClass(builder, options.name);
-            output.add(builder.toString());
+            Appendable buffer = bufferSupplier.get();
+            generateAbstractClass(buffer, options.name);
+            output.add(Pair.of(options.name, buffer));
 
-            builder = new StringBuilder();
-            generateVisitorClass(builder, options);
-            output.add(builder.toString());
+            buffer = bufferSupplier.get();
+            generateVisitorClass(buffer, options);
+            output.add(Pair.of(options.name + "Visitor", buffer));
 
             for (Option option : options.options) {
-                builder = new StringBuilder();
-                ConcreteClassGenerator.generate(builder, option.fields, option.name, options.name);
-                output.add(builder.toString());
+                buffer = bufferSupplier.get();
+                ConcreteClassGenerator.generate(buffer, option.fields, option.name, options.name);
+                output.add(Pair.of(option.name, buffer));
             }
 
             return output;
