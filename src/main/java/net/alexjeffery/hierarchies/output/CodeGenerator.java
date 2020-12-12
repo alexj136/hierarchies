@@ -29,7 +29,7 @@ public class CodeGenerator {
         public List<String> visit(@NotNull Declaration.Fixed fixed, Void input) throws IOException {
             List<String> output= new ArrayList<>();
             StringBuilder builder = new StringBuilder();
-            ClassGenerator.generate(builder, fixed.fields, fixed.name);
+            ConcreteClassGenerator.generate(builder, fixed.fields, fixed.name);
             output.add(builder.toString());
             return output;
         }
@@ -48,7 +48,7 @@ public class CodeGenerator {
 
             for (Option option : options.options) {
                 builder = new StringBuilder();
-                ClassGenerator.generate(builder, option.fields, option.name, options.name);
+                ConcreteClassGenerator.generate(builder, option.fields, option.name, options.name);
                 output.add(builder.toString());
             }
 
@@ -103,14 +103,14 @@ public class CodeGenerator {
         buffer.append(subclassName.substring(1));
     }
 
-    private static class ClassGenerator {
+    private static class ConcreteClassGenerator {
 
         public static void generate(
                 @NotNull Appendable buffer,
                 @NotNull List<Field> fields,
                 @NotNull String name
         ) throws IOException {
-            ClassGenerator.generate(buffer, fields, name, null);
+            ConcreteClassGenerator.generate(buffer, fields, name, null);
         }
 
         public static void generate(
@@ -119,14 +119,14 @@ public class CodeGenerator {
                 @NotNull String name,
                 @Nullable String superName
         ) throws IOException {
-            ClassGenerator generator = new ClassGenerator(buffer);
+            ConcreteClassGenerator generator = new ConcreteClassGenerator(buffer);
             generator.appendClass(fields, name, superName);
         }
 
         @NotNull
         private Appendable buffer;
 
-        private ClassGenerator(@NotNull Appendable buffer) {
+        private ConcreteClassGenerator(@NotNull Appendable buffer) {
             this.buffer = buffer;
         }
 
