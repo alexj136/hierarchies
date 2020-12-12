@@ -6,6 +6,11 @@ grammar Hierarchies;
     import net.alexjeffery.hierarchies.syntax.Field;
 }
 
+declarations returns [List<Declaration> out]
+    : declaration declarations { $out = $declarations.out; $out.add(0, $declaration.out); }
+    | declaration { $out = new ArrayList<>(); $out.add($declaration.out); }
+    ;
+
 declaration returns [Declaration out]
     : IdentU '=' fields ';' { $out = new Declaration.Fixed($IdentU.text, $fields.out); }
     | IdentU '=' opts ';' { $out = new Declaration.Options($IdentU.text, $opts.out); }
