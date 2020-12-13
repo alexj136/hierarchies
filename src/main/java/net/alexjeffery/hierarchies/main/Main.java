@@ -17,7 +17,7 @@ public class Main {
         HierarchiesLexer lexer = new HierarchiesLexer(new ANTLRFileStream(inputFileName));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         HierarchiesParser parser = new HierarchiesParser(tokens);
-        List<Declaration> declarations = parser.declarations().out;
+        List<Declaration> declarations = List.of(parser.declaration().out);
         SystemOutCodeGenerator.printDeclarations(declarations);
     }
 }

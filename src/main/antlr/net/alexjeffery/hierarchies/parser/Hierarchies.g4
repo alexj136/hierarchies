@@ -46,4 +46,4 @@ Upper : ('A'..'Z') ;
 Alpha : Lower | Upper ;
 IdentL : Lower Alpha * ;
 IdentU : Upper Alpha * ;
-Whitespace : [ \t\r\n]* -> skip ;
+Whitespace : [ \t\r\n]+ -> skip ;
