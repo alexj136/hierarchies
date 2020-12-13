@@ -7,8 +7,8 @@ grammar Hierarchies;
 }
 
 declarations returns [List<Declaration> out]
-    : declaration declarations { $out = $declarations.out; $out.add(0, $declaration.out); }
-    | declaration { $out = new ArrayList<>(); $out.add($declaration.out); }
+    : declaration ds=declarations { $out = $ds.out; $out.add(0, $declaration.out); }
+    | declaration EOF { $out = new ArrayList<>(); $out.add($declaration.out); }
     ;
 
 declaration returns [Declaration out]
@@ -17,7 +17,7 @@ declaration returns [Declaration out]
     ;
 
 opts returns [List<Option> out]
-    : option '|' opts { $out = $opts.out; $out.add(0, $option.out); }
+    : option '|' os=opts { $out = $os.out; $out.add(0, $option.out); }
     | option { $out = new ArrayList<Option>(); $out.add($option.out); }
     ;
 
@@ -26,7 +26,7 @@ option returns [Option out]
     ;
 
 fields returns [List<Field> out]
-    : field fields { $out = $fields.out; $out.add(0, $field.out); }
+    : field fs=fields { $out = $fs.out; $out.add(0, $field.out); }
     | field { $out = new ArrayList<Field>(); $out.add($field.out); }
     ;
 
@@ -46,4 +46,4 @@ Upper : ('A'..'Z') ;
 Alpha : Lower | Upper ;
 IdentL : Lower Alpha * ;
 IdentU : Upper Alpha * ;
-Whitespace : [ \t\r\n]+ -> skip ;
+Whitespace : [ \t\r\n]* -> skip ;
